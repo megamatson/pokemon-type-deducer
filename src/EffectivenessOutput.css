@@ -1,0 +1,23 @@
+.normally-effective {
+	color: white
+}
+
+.not-very-effective {
+	color: yellow
+}
+
+.super-effective {
+	color: #0f0
+}
+
+.no-effect {
+	color: red
+}
+
+.unknown-effectiveness {
+	color: gray
+}
+
+.deduced {
+	color: rgb(0, 255, 179)
+}
