@@ -8,5 +8,4 @@ test('renders learn react link', () => {
   const effectText = screen.getByText(/Effect/);
   expect(typeText).toBeInTheDocument();
   expect(effectText).toBeInTheDocument();
-  expect(false).toBe(true);
 });
