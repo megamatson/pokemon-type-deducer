@@ -193,6 +193,7 @@ class App extends React.Component<Props, State> {
 	static readonly effectPrefix = 'E_';
 	static readonly typePrefix = 'T_';
 	static readonly wonderGuardParameter = 'WG';
+	static readonly wonderGuardParameterSet = 'T';
 
 	constructor(props: Props) {
 		super(props);
@@ -210,7 +211,7 @@ class App extends React.Component<Props, State> {
 			effect: validEffectEffectivenesses,
 			potentialTypes,
 			type: validTypeEffectiveness
-		} = getValidEffectivenesses(typeMap, effectMap);
+		} = getValidEffectivenesses(typeMap, effectMap, hasWonderGuard);
 
 		return {
 			type: {
@@ -234,9 +235,8 @@ class App extends React.Component<Props, State> {
 
 	static getInitialWonderGuard(params: URLSearchParams) {
 		const value = params.get(this.wonderGuardParameter)
-		if (value)
-			return value === '1';
-
+		if (value && value === App.wonderGuardParameterSet)
+			return true;
 		return false;
 	}
 
@@ -419,10 +419,13 @@ class App extends React.Component<Props, State> {
 	}
 
 	getParams() {
-		const paramsObject = {
+		let paramsObject = {
 			...this.getTypesObject(),
 			...this.getEffectsObject()
 		};
+
+		if (this.state.wonderGuard.has)
+			paramsObject[App.wonderGuardParameter] = App.wonderGuardParameterSet;
 		
 		return paramsObject;
 	}
