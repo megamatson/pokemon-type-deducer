@@ -9,7 +9,4 @@ jobs:
         with:
           node-version: '14'
       - run: npm install
-      - run: git config user.name ${{github.repository_owner}}
-      - run: git config user.email ''
       - run: npm test
-      - run: npm run deploy
