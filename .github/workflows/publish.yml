@@ -1,7 +1,7 @@
 name: publish
 on: [push]
 jobs:
-  run-tests:
+  setup:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -9,5 +9,6 @@ jobs:
         with:
           node-version: '14'
       - run: npm install
+      - run: git config user.name ${{github.repository_owner}}
       - run: npm test
       - run: npm run deploy
