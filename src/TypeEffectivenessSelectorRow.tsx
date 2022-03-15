@@ -58,7 +58,8 @@ class TypeEffectivenessSelectorRow<T extends TypeEffectiveness> extends React.Co
 						type='radio'
 						name={`${this.props.typeEffectiveness.name}Effectiveness`}
 						checked={effectiveness === (deducedEffectiveness ?? this.props.effectiveness)}
-						onChange={
+						readOnly={true}
+						onClick={
 							() => this.props.setEffectiveness?.(this.props.typeEffectiveness, effectiveness)
 						}
 						disabled={
