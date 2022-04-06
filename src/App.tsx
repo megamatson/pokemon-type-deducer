@@ -188,6 +188,17 @@ function getCommonTypes(fullTypes: readonly FullType[]): [] | [MonType] | [MonTy
 	return ret;
 }
 
+function mapUnion<K, V>(...maps: readonly (Map<K, V>|undefined|null)[]): Map<K, V> {
+	let ret = new Map<K, V>();
+	for (const map of maps) {
+		if (map === undefined || map === null)
+			continue;
+
+		map.forEach((v, k) => ret.set(k, v));
+	}
+
+	return ret;
+}
 
 class App extends React.Component<Props, State> {
 	static readonly effectPrefix = 'E_';
@@ -285,7 +296,7 @@ class App extends React.Component<Props, State> {
 			margin: '10px'
 		};
 
-		return <div>
+		return (<div>
 			<div style={style}>
 				<EffectivenessInput
 					type={{
@@ -305,7 +316,7 @@ class App extends React.Component<Props, State> {
 					wonderGuard={{
 						has: this.state.wonderGuard.has,
 						canBeTrue: this.state.wonderGuard.canHave,
-						setWonderGuard: this.setWonderGuard,
+						set: this.setWonderGuard,
 					}}
 
 					setParameters={this.setParameters}
@@ -325,49 +336,63 @@ class App extends React.Component<Props, State> {
 					}}
 				/>
 			</div>
-		</div>;
+		</div>);
 	}
 
 	setParameters: NonNullable<TypeEffectivenessInputProps['setParameters']> = (params) => {
-		if (params.typeEffectiveness === undefined)
-			params.typeEffectiveness = this.state.type.effectivenesses;
-		if (params.effectEffectiveness === undefined)
-			params.effectEffectiveness = this.state.effect.effectivenesses;
-		if (params.wonderGuard === undefined)
-			params.wonderGuard = this.state.wonderGuard.has;
+		this.setState((prevState) => {
+			params.typeEffectiveness = mapUnion(
+				prevState.type.effectivenesses,
+				params.typeEffectiveness
+			);
 
-		const filledParams = params as Required<typeof params>;
+			params.effectEffectiveness = mapUnion(
+				prevState.effect.effectivenesses,
+				params.effectEffectiveness
+			);
 
-		const {
-			type: validTypeEffectiveness,
-			effect: validEffectEffectiveness,
-			potentialTypes
-		} = getValidEffectivenesses(
-			filledParams.typeEffectiveness,
-			filledParams.effectEffectiveness,
-			filledParams.wonderGuard
-		);
+			if (params.wonderGuard === undefined)
+				params.wonderGuard = prevState.wonderGuard.has;
 
-		this.setState({
-			effect: {
-				effectivenesses: filledParams.effectEffectiveness,
-				validEffectivenesses: validEffectEffectiveness,
-				deducedEffectivenesses: getDeducedTypeEffectivenesses(validEffectEffectiveness, filledParams.effectEffectiveness),
-			},
+			const filledParams = params as Required<typeof params>;
 
-			type: {
-				effectivenesses: filledParams.typeEffectiveness,
-				validEffectivenesses: validTypeEffectiveness,
-				deducedEffectivenesses: getDeducedTypeEffectivenesses(validTypeEffectiveness, filledParams.typeEffectiveness),
-			},
+			const {
+				type: validTypeEffectiveness,
+				effect: validEffectEffectiveness,
+				potentialTypes
+			} = getValidEffectivenesses(
+				filledParams.typeEffectiveness,
+				filledParams.effectEffectiveness,
+				filledParams.wonderGuard
+			);
 
-			wonderGuard: {
-				has: filledParams.wonderGuard,
-				canHave: canHaveWonderGuard(filledParams.typeEffectiveness),
-			},
+			return {
+				effect: {
+					effectivenesses: filledParams.effectEffectiveness,
+					validEffectivenesses: validEffectEffectiveness,
+					deducedEffectivenesses: getDeducedTypeEffectivenesses(
+						validEffectEffectiveness,
+						filledParams.effectEffectiveness
+					),
+				},
 
-			potentialTypes: potentialTypes,
-			commonTypes: getCommonTypes(potentialTypes),
+				type: {
+					effectivenesses: filledParams.typeEffectiveness,
+					validEffectivenesses: validTypeEffectiveness,
+					deducedEffectivenesses: getDeducedTypeEffectivenesses(
+						validTypeEffectiveness,
+						filledParams.typeEffectiveness
+					),
+				},
+
+				wonderGuard: {
+					has: filledParams.wonderGuard,
+					canHave: canHaveWonderGuard(filledParams.typeEffectiveness),
+				},
+
+				potentialTypes: potentialTypes,
+				commonTypes: getCommonTypes(potentialTypes),
+			}
 		});
 	}
 
@@ -376,13 +401,7 @@ class App extends React.Component<Props, State> {
 	}
 
 	setEffectEffectiveness = (targetEffect: Effect, newEffectiveness: Effectiveness) => {
-		let newEffectivenessMap = new Map();
-
-		this.state.effect.effectivenesses.forEach((oldEffectiveness, effect) => {
-				newEffectivenessMap.set(effect, effect === targetEffect ? newEffectiveness : oldEffectiveness);
-			}
-		);
-
+		let newEffectivenessMap = new Map([[targetEffect, newEffectiveness]]);
 		this.setEffectEffectivenesses(newEffectivenessMap);
 	}
 
@@ -395,12 +414,7 @@ class App extends React.Component<Props, State> {
 	}
 
 	setTypeEffectiveness = (targetType: MonType, newEffectiveness: Effectiveness) => {
-		let newEffectivenessMap = new Map();
-
-		this.state.type.effectivenesses.forEach((oldEffectiveness, type) => {
-			newEffectivenessMap.set(type, type === targetType ? newEffectiveness : oldEffectiveness);
-		});
-
+		let newEffectivenessMap = new Map([[targetType, newEffectiveness]]);
 		this.setTypeEffectivenesses(newEffectivenessMap);
 	}
 

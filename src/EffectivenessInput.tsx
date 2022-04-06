@@ -42,7 +42,8 @@ export interface Props {
 	effect?: TypeEffectivenessInputProps<Effect>;
 
 	/**
-	 * If provided, a "Reset All" button will appear
+	 * If provided, will be used for the "Reset All" button.
+	 * Otherwise, multiple calls to the corresponding setters will be used.
 	 */
 	setParameters?(parameters: {
 		wonderGuard?: boolean,
@@ -56,8 +57,9 @@ export interface Props {
 		/** Disable if target cannot have wonder guard
 		 * e.g. if there is a normally effective type against the target
 		 **/
+		// TODO: canBeToggled instead of canBeTrue
 		canBeTrue?: boolean,
-		setWonderGuard?(newValue: boolean): void;
+		set?(newValue: boolean): void;
 	}
 };
 
@@ -79,6 +81,16 @@ function separate(contents: any[]): any[] {
 }
 
 class EffectivenessInput extends React.Component<Props> {
+	private typeEffectivenessInput;
+	private effectEffectivenessInput;
+
+	constructor(props: Props) {
+		super(props);
+
+		this.typeEffectivenessInput = React.createRef<TypeEffectivenessInput<MonType>>();
+		this.effectEffectivenessInput = React.createRef<TypeEffectivenessInput<Effect>>();
+	}
+
 	render = (): React.ReactNode => {
 		const wonderGuardID = 'wonder-guard-input';
 		const contents: React.ReactElement[] = [];
@@ -86,17 +98,19 @@ class EffectivenessInput extends React.Component<Props> {
 		type TypeEffectivenessEntry = [
 			string,
 			TypeEffectivenessClass<TypeEffectiveness>,
-			TypeEffectivenessInputProps<TypeEffectiveness>?
+			TypeEffectivenessInputProps<TypeEffectiveness>|undefined,
+			React.RefObject<TypeEffectivenessInput<TypeEffectiveness>>
 		];
 		const typeEffectivenessEntries: TypeEffectivenessEntry[] = [
-			['Type', MonType, this.props.type ],
-			['Effect', Effect, this.props.effect ],
+			['Type', MonType, this.props.type, this.typeEffectivenessInput],
+			['Effect', Effect, this.props.effect, this.effectEffectivenessInput],
 		];
 
-		for (const [name, Type, props] of typeEffectivenessEntries) {
+		for (const [name, Type, props, ref] of typeEffectivenessEntries) {
 			if (props)
 				contents.push(<TypeEffectivenessInput
 					name={name}
+					ref={ref}
 					allEffectivenesses={Array.from(Type.allowedEffectiveness)}
 					typeEffectiveness={props.effectivenesses}
 					setTypeEffectiveness={props.setEffectiveness}
@@ -137,13 +151,18 @@ class EffectivenessInput extends React.Component<Props> {
 				effectEffectiveness: new Map(Array.from(Effect.getAll()).map(effect => [effect, Effectiveness.Unknown])),
 				wonderGuard: false,
 			});
+		else {
+			this.effectEffectivenessInput.current?.reset();
+			this.typeEffectivenessInput.current?.reset();
+			this.props.wonderGuard?.set?.(false);
+		}
 	}
 
 	toggleWonderGuard = () => {
-		if (!this.props.wonderGuard?.setWonderGuard)
+		if (!this.props.wonderGuard?.set)
 			return;
 
-		this.props.wonderGuard.setWonderGuard(!this.props.wonderGuard.has);
+		this.props.wonderGuard.set(!this.props.wonderGuard.has);
 	}
 }
 

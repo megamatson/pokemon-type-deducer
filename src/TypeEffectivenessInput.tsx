@@ -63,26 +63,24 @@ class TypeEffectivenessInput<T extends TypeEffectiveness> extends React.Componen
 				</table>
 			</form>
 			{
-				this.props.setTypeEffectivenesses ?
-					<button onClick={() => {
-						this.props.setTypeEffectivenesses!(
-							new Map(
-								Array.from(this.props.typeEffectiveness.keys()).map(type => [type, Effectiveness.Unknown])
-							)
-						)
-					}}>Reset</button> :
+				this.props.setTypeEffectivenesses || this.props.setTypeEffectiveness ?
+					<button onClick={this.reset}>Reset</button> :
 					null
 			}
 		</div>);
 	}
 
-	reset(this: TypeEffectivenessInput<T>) {
-		if (this.props.setTypeEffectivenesses !== undefined) {
+	reset = () => {
+		if (this.props.setTypeEffectivenesses) {
 			this.props.setTypeEffectivenesses(
 				new Map(
 					Array.from(this.props.typeEffectiveness.keys()).map(type => [type, Effectiveness.Unknown])
 				)
 			);
+		} else if (this.props.setTypeEffectiveness) {
+			this.props.typeEffectiveness.forEach((_, typeEffectiveness) => {
+				this.props.setTypeEffectiveness!(typeEffectiveness, Effectiveness.Unknown);
+			});
 		}
 	}
 }
