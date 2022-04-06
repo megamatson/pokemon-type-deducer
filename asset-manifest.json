@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/pokemon-type-deducer/static/css/main.a2b232b9.css",
-    "main.js": "/pokemon-type-deducer/static/js/main.5a3aaf59.js",
+    "main.js": "/pokemon-type-deducer/static/js/main.076ad72b.js",
     "static/js/787.d4f544ba.chunk.js": "/pokemon-type-deducer/static/js/787.d4f544ba.chunk.js",
     "index.html": "/pokemon-type-deducer/index.html",
     "main.a2b232b9.css.map": "/pokemon-type-deducer/static/css/main.a2b232b9.css.map",
-    "main.5a3aaf59.js.map": "/pokemon-type-deducer/static/js/main.5a3aaf59.js.map",
+    "main.076ad72b.js.map": "/pokemon-type-deducer/static/js/main.076ad72b.js.map",
     "787.d4f544ba.chunk.js.map": "/pokemon-type-deducer/static/js/787.d4f544ba.chunk.js.map"
   },
   "entrypoints": [
     "static/css/main.a2b232b9.css",
-    "static/js/main.5a3aaf59.js"
+    "static/js/main.076ad72b.js"
   ]
 }
