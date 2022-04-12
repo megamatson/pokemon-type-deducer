@@ -1,5 +1,5 @@
 import EffectivenessInput, { Props as TypeEffectivenessInputProps } from './EffectivenessInput';
-import EffectivenessOutput, { Props as EffectivenessOutputProps } from './EffectivenessOutput';
+import EffectivenessOutput from './EffectivenessOutput';
 import './App.css';
 import MonType from './MonType';
 import React from 'react';
@@ -12,22 +12,12 @@ import { isWonderGuardEffectiveness } from './WonderGuard';
 
 export interface Props {}
 
-interface TypeEffectivenessEntry<T extends TypeEffectiveness> {
-	effectivenesses: Map<T, Effectiveness>;
-	validEffectivenesses: Map<T, Set<Effectiveness>>;
-	deducedEffectivenesses: Map<T, Effectiveness>;
-}
+type TypeEffectivenessEntry<T extends TypeEffectiveness> = Map<T, Effectiveness>;
 
 export interface State {
 	type: TypeEffectivenessEntry<MonType>;
 	effect: TypeEffectivenessEntry<Effect>;
-	potentialTypes: FullType[];
-	commonTypes: EffectivenessOutputProps['commonTypes'];
-
-	wonderGuard: {
-		has: boolean,
-		canHave: boolean,
-	};
+	wonderGuard: boolean;
 };
 
 const allTypes = Array.from(FullType.getAllFunctionallyUnique());
@@ -173,7 +163,9 @@ function getValidEffectivenesses(
 	return ret;
 }
 
-function getCommonTypes(fullTypes: readonly FullType[]): [] | [MonType] | [MonType, MonType] {
+function getCommonTypes(fullTypes: readonly FullType[]):
+	[] | [MonType] | [MonType, MonType]
+{
 	if (fullTypes.length === 0)
 		return [];
 
@@ -188,7 +180,9 @@ function getCommonTypes(fullTypes: readonly FullType[]): [] | [MonType] | [MonTy
 	return ret;
 }
 
-function mapUnion<K, V>(...maps: readonly (Map<K, V>|undefined|null)[]): Map<K, V> {
+function mapUnion<K, V>(...maps: readonly (Map<K, V>|undefined|null)[]):
+	Map<K, V>
+{
 	let ret = new Map<K, V>();
 	for (const map of maps) {
 		if (map === undefined || map === null)
@@ -215,32 +209,15 @@ class App extends React.Component<Props, State> {
 
 	static getInitialState(query: string): State {
 		const querySearcher = new URLSearchParams(query);
-		const typeMap: Map<MonType, Effectiveness> = this.getInitialTypes(querySearcher);
-		const effectMap: Map<Effect, Effectiveness> = this.getInitialEffects(querySearcher);
-		const hasWonderGuard = this.getInitialWonderGuard(querySearcher);
-		const {
-			effect: validEffectEffectivenesses,
-			potentialTypes,
-			type: validTypeEffectiveness
-		} = getValidEffectivenesses(typeMap, effectMap, hasWonderGuard);
+		const typeMap: State['type'] = this.getInitialTypes(querySearcher);
+		const effectMap: State['effect'] = this.getInitialEffects(querySearcher);
+		const hasWonderGuard: State['wonderGuard'] =
+			this.getInitialWonderGuard(querySearcher);
 
 		return {
-			type: {
-				effectivenesses: typeMap,
-				validEffectivenesses: validTypeEffectiveness,
-				deducedEffectivenesses: getDeducedTypeEffectivenesses(validTypeEffectiveness, typeMap),
-			},
-			effect: {
-				effectivenesses: effectMap,
-				validEffectivenesses: validEffectEffectivenesses,
-				deducedEffectivenesses: getDeducedTypeEffectivenesses(validEffectEffectivenesses, effectMap),
-			},
-			wonderGuard: {
-				has: hasWonderGuard,
-				canHave: canHaveWonderGuard(typeMap),
-			},
-			potentialTypes: potentialTypes,
-			commonTypes: getCommonTypes(potentialTypes),
+			type: typeMap,
+			effect: effectMap,
+			wonderGuard: hasWonderGuard,
 		};
 	}
 
@@ -296,26 +273,36 @@ class App extends React.Component<Props, State> {
 			margin: '10px'
 		};
 
+		let {
+			type: validTypeEffectivenesses,
+			effect: validEffectEffectiveness,
+			potentialTypes,
+		} = getValidEffectivenesses(this.state.type, this.state.effect, this.state.wonderGuard);
+
+		let commonTypes = getCommonTypes(potentialTypes);
+
+		
+
 		return (<div>
 			<div style={style}>
 				<EffectivenessInput
 					type={{
-						effectivenesses: this.state.type.effectivenesses,
+						effectivenesses: this.state.type,
 						setEffectiveness: this.setTypeEffectiveness,
 						setEffectivenesses: this.setTypeEffectivenesses,
-						validEffectivenesses: this.state.type.validEffectivenesses,
+						validEffectivenesses: validTypeEffectivenesses,
 					}}
 
 					effect={{
-						effectivenesses: this.state.effect.effectivenesses,
+						effectivenesses: this.state.effect,
 						setEffectiveness: this.setEffectEffectiveness,
 						setEffectivenesses: this.setEffectEffectivenesses,
-						validEffectivenesses: this.state.effect.validEffectivenesses,
+						validEffectivenesses: validEffectEffectiveness,
 					}}
 
 					wonderGuard={{
-						has: this.state.wonderGuard.has,
-						canBeTrue: this.state.wonderGuard.canHave,
+						has: this.state.wonderGuard,
+						canBeTrue: canHaveWonderGuard(this.state.type),
 						set: this.setWonderGuard,
 					}}
 
@@ -324,15 +311,21 @@ class App extends React.Component<Props, State> {
 			</div>
 			<div style={style}>
 				<EffectivenessOutput
-					potentialTypes={this.state.potentialTypes}
-					commonTypes={this.state.commonTypes}
+					potentialTypes={potentialTypes}
+					commonTypes={commonTypes}
 					type={{
-						effectiveness: this.state.type.effectivenesses,
-						deducedEffectiveness: this.state.type.deducedEffectivenesses
+						effectiveness: this.state.type,
+						deducedEffectiveness: getDeducedTypeEffectivenesses(
+							validTypeEffectivenesses,
+							this.state.type
+						),
 					}}
 					effect={{
-						effectiveness: this.state.effect.effectivenesses,
-						deducedEffectiveness: this.state.effect.deducedEffectivenesses,
+						effectiveness: this.state.effect,
+						deducedEffectiveness: getDeducedTypeEffectivenesses(
+							validEffectEffectiveness,
+							this.state.effect
+						),
 					}}
 				/>
 			</div>
@@ -342,57 +335,25 @@ class App extends React.Component<Props, State> {
 	setParameters: NonNullable<TypeEffectivenessInputProps['setParameters']> = (params) => {
 		this.setState((prevState) => {
 			params.typeEffectiveness = mapUnion(
-				prevState.type.effectivenesses,
+				prevState.type,
 				params.typeEffectiveness
 			);
 
 			params.effectEffectiveness = mapUnion(
-				prevState.effect.effectivenesses,
+				prevState.effect,
 				params.effectEffectiveness
 			);
 
 			if (params.wonderGuard === undefined)
-				params.wonderGuard = prevState.wonderGuard.has;
+				params.wonderGuard = prevState.wonderGuard;
 
 			const filledParams = params as Required<typeof params>;
 
-			const {
-				type: validTypeEffectiveness,
-				effect: validEffectEffectiveness,
-				potentialTypes
-			} = getValidEffectivenesses(
-				filledParams.typeEffectiveness,
-				filledParams.effectEffectiveness,
-				filledParams.wonderGuard
-			);
-
 			return {
-				effect: {
-					effectivenesses: filledParams.effectEffectiveness,
-					validEffectivenesses: validEffectEffectiveness,
-					deducedEffectivenesses: getDeducedTypeEffectivenesses(
-						validEffectEffectiveness,
-						filledParams.effectEffectiveness
-					),
-				},
-
-				type: {
-					effectivenesses: filledParams.typeEffectiveness,
-					validEffectivenesses: validTypeEffectiveness,
-					deducedEffectivenesses: getDeducedTypeEffectivenesses(
-						validTypeEffectiveness,
-						filledParams.typeEffectiveness
-					),
-				},
-
-				wonderGuard: {
-					has: filledParams.wonderGuard,
-					canHave: canHaveWonderGuard(filledParams.typeEffectiveness),
-				},
-
-				potentialTypes: potentialTypes,
-				commonTypes: getCommonTypes(potentialTypes),
-			}
+				effect: filledParams.effectEffectiveness,
+				type: filledParams.typeEffectiveness,
+				wonderGuard: filledParams.wonderGuard,
+			} as State;
 		});
 	}
 
@@ -438,13 +399,16 @@ class App extends React.Component<Props, State> {
 			...this.getEffectsObject()
 		};
 
-		if (this.state.wonderGuard.has)
+		if (this.state.wonderGuard)
 			paramsObject[App.wonderGuardParameter] = App.wonderGuardParameterSet;
 		
 		return paramsObject;
 	}
 
-	static getObject(map: Map<TypeEffectiveness, Effectiveness>, prefix: string) {
+	static getObject(
+		map: Map<TypeEffectiveness, Effectiveness>,
+		prefix: string
+	) {
 		let typesObject: Record<string, string> = {};
 
 		map.forEach((effectiveness, te) => {
@@ -456,11 +420,11 @@ class App extends React.Component<Props, State> {
 	}
 
 	getTypesObject() {
-		return App.getObject(this.state.type.effectivenesses, App.typePrefix);
+		return App.getObject(this.state.type, App.typePrefix);
 	}
 
 	getEffectsObject() {
-		return App.getObject(this.state.effect.effectivenesses, App.effectPrefix);
+		return App.getObject(this.state.effect, App.effectPrefix);
 	}
 }
 
