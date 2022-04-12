@@ -19,7 +19,7 @@ export interface Props {
 	type?: TypeEffectivenessEntry<MonType>
 	potentialTypes?: FullType[],
 	commonTypes?: [] | [MonType] | [MonType, MonType],
-};
+}
 
 class EffectivenessOutput extends React.Component<Props> {
 	render(): React.ReactNode {
@@ -34,10 +34,19 @@ class EffectivenessOutput extends React.Component<Props> {
 
 		const contents: React.ReactElement[] = [];
 
-		if (this.props.commonTypes !== undefined && this.props.commonTypes.length !== 0)
+		if (
+			this.props.commonTypes !== undefined
+			&& this.props.commonTypes.length !== 0
+		)
 			contents.push(<div key='common types'>
-				<span>Common {en_pluralize(this.props.commonTypes.length, 'Type')}: </span>
-				<FullTypeComponent type={new FullType(this.props.commonTypes[0], this.props.commonTypes[1])}/>
+				<span>
+					Common {en_pluralize(this.props.commonTypes.length, 'Type')}:
+				</span>
+				<FullTypeComponent
+					type={
+						new FullType(this.props.commonTypes[0], this.props.commonTypes[1])
+					}
+				/>
 			</div>);
 
 		type TypeEffectivenessEntry<T extends TypeEffectiveness> = [
@@ -58,7 +67,9 @@ class EffectivenessOutput extends React.Component<Props> {
 
 			contents.push(<div key={`deduced ${title} effectiveness`}>
 				<span>
-					Deduced {title} {en_pluralize(mapping.size, 'effectiveness', 'es')} found:
+					Deduced {title} {
+						en_pluralize(mapping.size, 'effectiveness', 'es')
+					} found:
 				</span>
 				<ul>{
 					Array.from(map<[MonType|Effect, Effectiveness], React.ReactElement>(
@@ -72,11 +83,15 @@ class EffectivenessOutput extends React.Component<Props> {
 						]}</li>)
 					)
 				}</ul>
-			</div>)
+			</div>);
 		}
 
 		if (this.props.potentialTypes) {
-			contents.push(<span key='potential types'>{this.props.potentialTypes.length} potential types</span>);
+			contents.push(
+				<span key='potential types'>
+					{this.props.potentialTypes.length} potential types
+				</span>
+			);
 			contents.push(<ul key='potential types list'>{
 				this.props.potentialTypes
 					.map(fullType => <li key={fullType.toString()}>

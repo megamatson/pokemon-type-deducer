@@ -2,12 +2,12 @@ import getCssClass from "./CssClass";
 import { Effectiveness } from "./Effectiveness";
 import MonType from "./MonType";
 
-export interface TypeEffectivenessClass<T extends TypeEffectiveness> {
+export type TypeEffectivenessClass<T extends TypeEffectiveness> = {
 	allowedEffectiveness: Set<Effectiveness>;
 	get(name: string): T;
 	getAll(): Set<T>;
 	isValidEffectiveness(e: Effectiveness): boolean;
-}
+} & Function
 
 abstract class TypeEffectiveness {
 	static readonly allowedEffectiveness: Set<Effectiveness>;
@@ -35,8 +35,13 @@ abstract class TypeEffectiveness {
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const __test: TypeEffectivenessClass<TypeEffectiveness> = TypeEffectiveness;
+export function testIfIsTypeEffectivenessClass<T extends TypeEffectiveness>(
+	t: TypeEffectivenessClass<T>
+) {
+	// left intentionally blank
+}
+
+testIfIsTypeEffectivenessClass(TypeEffectiveness);
 
 
 export default TypeEffectiveness;

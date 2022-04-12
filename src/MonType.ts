@@ -1,5 +1,8 @@
 import Effectiveness from "./Effectiveness";
-import TypeEffectiveness, { TypeEffectivenessClass } from './TypeEffectiveness';
+import
+	TypeEffectiveness, {
+	testIfIsTypeEffectivenessClass
+} from './TypeEffectiveness';
 import associate, {get} from './Associate';
 
 type EffectivenessCollection = Set<MonType>;
@@ -46,7 +49,10 @@ export class MonType extends TypeEffectiveness {
 		return this.name;
 	}
 
-	getEffectivenessAgainst(type: MonType, hasWonderGuard?: boolean): Effectiveness {
+	getEffectivenessAgainst(
+		type: MonType,
+		hasWonderGuard?: boolean
+	): Effectiveness {
 		if (this.superEffectiveAgainst.has(type))
 			return Effectiveness.Super;
 		
@@ -103,10 +109,20 @@ export class MonType extends TypeEffectiveness {
 			[MonType.water, [MonType.fire, MonType.ground, MonType.rock]],
 			[MonType.grass, [MonType.water, MonType.ground, MonType.rock]],
 			[MonType.electric, [MonType.water, MonType.flying]],
-			[MonType.ice, [MonType.grass, MonType.ground, MonType.flying, MonType.dragon]],
-			[MonType.fighting, [MonType.normal, MonType.ice, MonType.rock, MonType.dark, MonType.steel]],
+			[MonType.ice, [
+				MonType.grass, MonType.ground, MonType.flying, MonType.dragon]
+			],
+			[MonType.fighting, [
+				MonType.normal, MonType.ice, MonType.rock, MonType.dark, MonType.steel]
+			],
 			[MonType.poison, [MonType.grass, MonType.fairy]],
-			[MonType.ground, [MonType.fire, MonType.electric, MonType.poison, MonType.rock, MonType.steel]],
+			[MonType.ground, [
+				MonType.fire,
+				MonType.electric,
+				MonType.poison,
+				MonType.rock,
+				MonType.steel
+			]],
 			[MonType.flying, [MonType.grass, MonType.fighting, MonType.bug]],
 			[MonType.psychic, [MonType.fighting, MonType.poison]],
 			[MonType.bug, [MonType.grass, MonType.psychic, MonType.dark]],
@@ -125,22 +141,50 @@ export class MonType extends TypeEffectiveness {
 		// Not very effective
 		const notVeryEffectiveMap = new Map([
 			[MonType.normal, [MonType.rock, MonType.steel]],
-			[MonType.fire, [MonType.fire, MonType.water, MonType.rock, MonType.dragon]],
+			[MonType.fire, [
+				MonType.fire, MonType.water, MonType.rock, MonType.dragon]
+			],
 			[MonType.water, [MonType.water, MonType.grass, MonType.dragon]],
-			[MonType.grass, [MonType.fire, MonType.grass, MonType.poison, MonType.flying, MonType.bug, MonType.dragon, MonType.steel]],
+			[MonType.grass, [
+				MonType.fire,
+				MonType.grass,
+				MonType.poison,
+				MonType.flying,
+				MonType.bug,
+				MonType.dragon,
+				MonType.steel
+			]],
 			[MonType.electric, [MonType.grass, MonType.electric, MonType.dragon]],
 			[MonType.ice, [MonType.fire, MonType.water, MonType.ice, MonType.steel]],
-			[MonType.fighting, [MonType.poison, MonType.flying, MonType.psychic, MonType.bug, MonType.fairy]],
-			[MonType.poison, [MonType.poison, MonType.ground, MonType.rock, MonType.ghost]],
+			[MonType.fighting, [
+				MonType.poison,
+				MonType.flying,
+				MonType.psychic,
+				MonType.bug,
+				MonType.fairy
+			]],
+			[MonType.poison, [
+				MonType.poison, MonType.ground, MonType.rock, MonType.ghost
+			]],
 			[MonType.ground, [MonType.grass, MonType.bug]],
 			[MonType.flying, [MonType.electric, MonType.rock, MonType.steel]],
 			[MonType.psychic, [MonType.psychic, MonType.steel]],
-			[MonType.bug, [MonType.fire, MonType.fighting, MonType.poison, MonType.flying, MonType.ghost, MonType.steel, MonType.fairy]],
+			[MonType.bug, [
+				MonType.fire,
+				MonType.fighting,
+				MonType.poison,
+				MonType.flying,
+				MonType.ghost,
+				MonType.steel,
+				MonType.fairy
+			]],
 			[MonType.rock, [MonType.fighting, MonType.ground, MonType.steel]],
 			[MonType.ghost, [MonType.dark]],
 			[MonType.dragon, [MonType.steel]],
 			[MonType.dark, [MonType.fighting, MonType.dark, MonType.fairy]],
-			[MonType.steel, [MonType.fire, MonType.water, MonType.electric, MonType.steel]],
+			[MonType.steel, [
+				MonType.fire, MonType.water, MonType.electric, MonType.steel
+			]],
 			[MonType.fairy, [MonType.fire, MonType.poison, MonType.steel]],
 		]);
 
@@ -166,8 +210,6 @@ export class MonType extends TypeEffectiveness {
 	}
 }
 
-// Test that MonType can be used as a TypeEffectivenessClass
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const __test: TypeEffectivenessClass<MonType> = MonType;
+testIfIsTypeEffectivenessClass(MonType);
 
 export default MonType;

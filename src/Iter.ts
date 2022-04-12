@@ -31,7 +31,10 @@ export function* map<T, U>(it: Iterable<T>, func: (v: T) => U): Generator<U> {
 		yield func(v);
 }
 
-export function* filter<T>(it: Iterable<T>, predicate: Predicate<T>): Generator<T> {
+export function* filter<T>(
+	it: Iterable<T>,
+	predicate: Predicate<T>
+): Generator<T> {
 	for (let v of it)
 		if (predicate(v))
 			yield v;

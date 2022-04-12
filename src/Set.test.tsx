@@ -11,7 +11,7 @@ const nontrivialCollections: any[][] = [
 	[[1], [1], [2]],
 	[[1], [1]],
 	[[1, 2, 3], [1, 2], [2, 3]],
-]
+];
 
 test('set equals', () => {
 	const tests: [any[], any[], boolean][] = [
@@ -126,9 +126,11 @@ describe('set intersection', () => {
 
 			const union = Sets.union(...sets);
 			for (const elem in union)
-				expect(intersect.has(elem) ? true : sets.some(v => !v.has(elem))).toBe(true);
+				expect(
+					intersect.has(elem) ? true : sets.some(v => !v.has(elem))
+				).toBe(true);
 		}
-	})
+	});
 });
 
 describe('set difference', () => {

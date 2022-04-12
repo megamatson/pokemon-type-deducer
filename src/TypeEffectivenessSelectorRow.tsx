@@ -27,7 +27,9 @@ interface Props<T extends TypeEffectiveness> {
 	setEffectiveness?(typeEffectiveness: T, effectiveness: Effectiveness): void,
 }
 
-class TypeEffectivenessSelectorRow<T extends TypeEffectiveness> extends React.Component<Props<T>> {
+class TypeEffectivenessSelectorRow<
+	T extends TypeEffectiveness
+> extends React.Component<Props<T>> {
 	render(): React.ReactNode {
 		const deducedEffectiveness =
 			this.props.validEffectivenesses &&
@@ -47,26 +49,35 @@ class TypeEffectivenessSelectorRow<T extends TypeEffectiveness> extends React.Co
 					typeEffectiveness={this.props.typeEffectiveness}
 					effectiveness={this.props.effectiveness}
 				/>
-				{
-					/*this.props.validEffectivenesses ? ' ' + Array.from(this.props.validEffectivenesses).map(e => e.symbol).join('') : ''*/
-				}
 			</td>
 			{
 				this.props.allEffectivenesses.map(effectiveness =>
-				<td key={`${this.props.typeEffectiveness.name}Effectiveness${effectiveness.symbol}`}>
+				<td key={
+					this.props.typeEffectiveness.name
+					+ 'Effectiveness'
+					+ effectiveness.symbol
+				}>
 					<input
 						type='radio'
 						name={`${this.props.typeEffectiveness.name}Effectiveness`}
-						checked={effectiveness === (deducedEffectiveness ?? this.props.effectiveness)}
+						checked={
+							effectiveness === (
+								deducedEffectiveness ?? this.props.effectiveness
+							)
+						}
 						readOnly={true}
-						onClick={
-							() => this.props.setEffectiveness?.(this.props.typeEffectiveness, effectiveness)
+						onClick={() => this.props.setEffectiveness?.(
+								this.props.typeEffectiveness,
+								effectiveness
+							)
 						}
 						disabled={
 							deducedEffectiveness ?
 								effectiveness !== deducedEffectiveness :
 								this.props.validEffectivenesses ?
-									!this.props.validEffectivenesses.has(effectiveness) && effectiveness !== Effectiveness.Unknown :
+									!this.props.validEffectivenesses.has(
+										effectiveness
+									) && effectiveness !== Effectiveness.Unknown :
 									false
 						}
 					/>

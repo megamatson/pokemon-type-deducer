@@ -30,6 +30,20 @@
     "extends": [
       "react-app",
       "react-app/jest"
+    ],
+    "overrides": [
+      {
+        "files": ["**/*.ts?(x)"],
+        "rules": {
+          "max-len": [
+            "error",
+            { "tabWidth": 2 }
+          ],
+          "no-extra-semi": "error",
+          "semi": 2,
+          "semi-spacing": "error"
+        }
+      }
     ]
   },
   "browserslist": {

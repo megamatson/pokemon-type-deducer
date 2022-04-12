@@ -25,12 +25,20 @@ class FullType {
 
 	static *getAll() {
 		const typeIterator1 = MonType.getAll().keys();
-		for (let type1Iteration = typeIterator1.next(); !type1Iteration.done; type1Iteration = typeIterator1.next()) {
+		for (
+			let type1Iteration = typeIterator1.next();
+			!type1Iteration.done;
+			type1Iteration = typeIterator1.next()
+		) {
 			const type1 = type1Iteration.value;
 			yield new FullType(type1);
 
 			const typeIterator2 = MonType.getAll().keys();
-			for (let type2Iteration = typeIterator2.next(); !type2Iteration.done; type2Iteration = typeIterator2.next()) {
+			for (
+				let type2Iteration = typeIterator2.next();
+				!type2Iteration.done;
+				type2Iteration = typeIterator2.next()
+			) {
 				const type2 = type2Iteration.value;
 				if (type1 === type2)
 					continue;
@@ -43,7 +51,11 @@ class FullType {
 	static *getAllFunctionallyUnique() {
 		const typeIterator = this.getAll();
 		
-		for (let typeIteration = typeIterator.next(); !typeIteration.done; typeIteration = typeIterator.next()) {
+		for (
+			let typeIteration = typeIterator.next();
+			!typeIteration.done;
+			typeIteration = typeIterator.next()
+		) {
 			const type = typeIteration.value;
 
 			if (type.type2 === null) {
@@ -59,7 +71,10 @@ class FullType {
 	}
 
 	toString() {
-		return this.type2 ? `${this.type1.name}, ${this.type2.name}` : this.type1.name;
+		return this.type2 ?
+			`${this.type1.name}, ${this.type2.name}` :
+			this.type1.name
+		;
 	}
 
 	getEffectivenessOnThis(
@@ -71,7 +86,10 @@ class FullType {
 			(this.type2 ? te.getEffectivenessAgainst(this.type2).value : 1)
 		);
 
-		return hasWonderGuard && te instanceof MonType ? toWonderGuardEffectiveness(ret) : ret;
+		return hasWonderGuard && te instanceof MonType ?
+			toWonderGuardEffectiveness(ret) :
+			ret
+		;
 	}
 }
 

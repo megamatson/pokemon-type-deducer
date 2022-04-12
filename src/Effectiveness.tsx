@@ -15,11 +15,14 @@ export class Effectiveness {
 		this.symbol = symbol;
 
 		associate(name, this, Effectiveness.nameMap);
-		associate(symbol, this, Effectiveness.nameMap)
+		associate(symbol, this, Effectiveness.nameMap);
 		associate(value.toString(), this, Effectiveness.nameMap);
 
 		if (Effectiveness.numberMap.has(value))
-			throw new Error(`value of ${value} already found on ${Effectiveness.numberMap.get(value)}`);
+			throw new Error(
+				'value of ' + value + ' already found on ' +
+					Effectiveness.numberMap.get(value)
+			);
 
 		Effectiveness.numberMap.set(value, this);
 	}
@@ -64,7 +67,10 @@ export class Effectiveness {
 	static readonly Super = new Effectiveness('Super effective', 2, '+');
 	static readonly Not = new Effectiveness('Not very effective', 0.5, '-');
 	static readonly Immune = new Effectiveness('No effect', 0, '0');
-	static readonly Unknown = new Effectiveness('Unknown effectiveness', NaN, '?');
+
+	static readonly Unknown = new Effectiveness(
+		'Unknown effectiveness', NaN, '?'
+	);
 }
 
 export default Effectiveness;

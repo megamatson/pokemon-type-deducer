@@ -7,7 +7,7 @@ export interface Props {
 
 class MonTypeComponent extends React.Component<Props> {
 	render(): React.ReactNode {
-		return <span>{this.props.type.name}</span>
+		return <span>{this.props.type.name}</span>;
 	}
 }
 

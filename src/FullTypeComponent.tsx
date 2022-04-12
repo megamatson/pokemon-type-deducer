@@ -4,7 +4,7 @@ import TypeEffectivenessComponent from "./TypeEffectivenessComponent";
 
 export interface Props {
 	type: FullType
-};
+}
 
 class FullTypeComponent extends React.Component<Props> {
 	render() {
@@ -15,10 +15,16 @@ class FullTypeComponent extends React.Component<Props> {
 			/>
 			{
 				this.props.type.type2 ?
-					[", ", <TypeEffectivenessComponent key='2' typeEffectiveness={this.props.type.type2}/>] :
+					[
+						", ",
+						<TypeEffectivenessComponent
+							key='2'
+							typeEffectiveness={this.props.type.type2}
+						/>
+					] :
 					null
 			}
-		</span>
+		</span>;
 	}
 }
 
